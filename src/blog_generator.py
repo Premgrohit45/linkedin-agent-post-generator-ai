@@ -1,36 +1,24 @@
-"""
-LinkedIn Blog Generator using Google AI SDK
-This module handles the generation of LinkedIn blog posts using Google's Generative AI.
-"""
 
 import google.generativeai as genai
 from typing import Dict, List, Optional
 import os
-from dotenv import load_dotenv
 import logging
 from datetime import datetime
-
-# Load environment variables
-load_dotenv()
+from .config import get_secret
 
 class LinkedInBlogGenerator:
-    """
-    A class to generate LinkedIn blog posts using Google AI SDK (Gemini).
-    """
-    
     def __init__(self):
-        """Initialize the blog generator with Google AI SDK."""
-        self.api_key = os.getenv('GOOGLE_API_KEY')
+        self.api_key = get_secret('GOOGLE_API_KEY')
         if not self.api_key:
             raise ValueError("Google API Key not found. Please set GOOGLE_API_KEY in .env file")
         
-        # Configure Google AI
+        
         genai.configure(api_key=self.api_key)
         
-        # Initialize the model
+        
         self.model = genai.GenerativeModel('gemini-2.5-flash')
         
-        # Set up logging
+        
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
         
@@ -58,7 +46,7 @@ class LinkedInBlogGenerator:
             Dict[str, str]: Generated blog post with title, content, hashtags, etc.
         """
         try:
-            # Create the prompt for blog generation
+            
             prompt = self._create_blog_prompt(
                 topic=topic,
                 tone=tone,
@@ -70,7 +58,7 @@ class LinkedInBlogGenerator:
             
             self.logger.info(f"Generating blog post for topic: {topic}")
             
-            # Generate the blog post using Google AI with error handling
+            
             try:
                 response = self.model.generate_content(
                     prompt,
@@ -84,10 +72,10 @@ class LinkedInBlogGenerator:
                 if not response.text:
                     raise Exception("No content generated from Google AI")
                 
-                # Parse the response
+                
                 blog_data = self._parse_blog_response(response.text)
                 
-                # Add metadata
+                
                 blog_data['generated_at'] = datetime.now().isoformat()
                 blog_data['topic'] = topic
                 blog_data['tone'] = tone

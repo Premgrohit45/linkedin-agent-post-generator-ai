@@ -1,8 +1,3 @@
-"""
-🤖 LinkedIn Blog Agent - Advanced AI Assistant
-Next-generation AI agent interface for professional content creation and distribution.
-"""
-
 import streamlit as st
 import sys
 import os
@@ -28,10 +23,10 @@ except ImportError as e:
 
 # Advanced Page Configuration
 st.set_page_config(
-    page_title="🤖 AI Blog Agent | Professional Content Creator",
-    page_icon="🤖",
+    page_title="💼 LinkedGenius | AI-Powered LinkedIn Content Creator",
+    page_icon="💼",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Custom CSS for Agent-like Design
@@ -39,13 +34,54 @@ def load_agent_css():
     st.markdown("""
     <style>
     /* Import futuristic fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
-    /* Global Styles */
+    /* Global Styles with LinkedIn-inspired Dark Background */
     .stApp {
-        background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 25%, #16213e 50%, #1a1a2e 75%, #0a0a0f 100%);
-        font-family: 'Rajdhani', sans-serif;
+        background: linear-gradient(135deg, #000000 0%, #0a1520 25%, #0d1f2d 50%, #0a1520 75%, #000000 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        font-family: 'Space Grotesk', sans-serif;
         color: #ffffff;
+        position: relative;
+        overflow-x: hidden;
+    }
+    
+    /* Animated particles background */
+    .stApp::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(2px 2px at 20% 30%, rgba(10, 102, 194, 0.4), transparent),
+            radial-gradient(2px 2px at 60% 70%, rgba(56, 152, 236, 0.3), transparent),
+            radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.15), transparent),
+            radial-gradient(1px 1px at 80% 10%, rgba(10, 102, 194, 0.35), transparent);
+        background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px;
+        background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+        animation: particleFloat 20s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes particleFloat {
+        from { transform: translateY(0px); }
+        to { transform: translateY(-1000px); }
+    }
+    
+    /* Ensure content is above background */
+    .stApp > * {
+        position: relative;
+        z-index: 1;
     }
     
     /* Enhanced Text Rendering for All Elements */
@@ -59,248 +95,517 @@ def load_agent_css():
     /* Improved Typography Base */
     body, div, p, span {
         word-spacing: 1px !important;
-        letter-spacing: 0.3px !important;
-        line-height: 1.7 !important;
+        letter-spacing: 0.5px !important;
+        line-height: 1.8 !important;
     }
     
-    /* Header Container */
+    /* Glassmorphism Header Container with 3D effect */
     .agent-header {
-        background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(0, 150, 255, 0.1) 100%);
-        border: 2px solid #00ffff;
+        background: rgba(5, 10, 20, 0.8);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 2px solid rgba(10, 102, 194, 0.4);
         border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
+        padding: 1.5rem 1.5rem;
+        margin-bottom: 1.5rem;
         text-align: center;
-        box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-        animation: pulse-border 3s ease-in-out infinite;
+        box-shadow: 
+            0 5px 20px 0 rgba(10, 102, 194, 0.2),
+            inset 0 0 30px rgba(10, 102, 194, 0.05);
+        animation: headerPulse 4s ease-in-out infinite;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+        position: relative;
+        overflow: hidden;
     }
     
-    @keyframes pulse-border {
-        0%, 100% { border-color: #00ffff; box-shadow: 0 0 30px rgba(0, 255, 255, 0.3); }
-        50% { border-color: #0096ff; box-shadow: 0 0 40px rgba(0, 150, 255, 0.5); }
+    .agent-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            transparent,
+            rgba(10, 102, 194, 0.15),
+            transparent
+        );
+        animation: shimmer 3s infinite;
+    }
+    
+    @keyframes headerPulse {
+        0%, 100% { 
+            border-color: rgba(10, 102, 194, 0.5);
+            box-shadow: 
+                0 8px 32px 0 rgba(10, 102, 194, 0.3),
+                inset 0 0 40px rgba(10, 102, 194, 0.08),
+                0 0 80px rgba(10, 102, 194, 0.15);
+        }
+        50% { 
+            border-color: rgba(56, 152, 236, 0.7);
+            box-shadow: 
+                0 8px 40px 0 rgba(10, 102, 194, 0.5),
+                inset 0 0 60px rgba(10, 102, 194, 0.15),
+                0 0 120px rgba(56, 152, 236, 0.3);
+        }
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
     }
     
     .agent-title {
         font-family: 'Orbitron', monospace;
-        font-size: 4rem;
+        font-size: 2.8rem;
         font-weight: 900;
-        color: #00ffff;
-        text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        background: linear-gradient(135deg, #0A66C2, #3898EC, #0A66C2);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradientText 3s ease infinite;
         margin: 0;
-        letter-spacing: 4px;
+        letter-spacing: 6px;
         text-transform: uppercase;
+        filter: drop-shadow(0 0 20px rgba(10, 102, 194, 0.7));
+        position: relative;
+        z-index: 2;
+    }
+    
+    @keyframes gradientText {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
     }
     
     .agent-subtitle {
-        font-size: 1.5rem;
-        color: #a0a0ff;
-        margin-top: 1rem;
-        font-weight: 400;
+        font-size: 1.1rem;
+        background: linear-gradient(90deg, #3898EC, #ffffff, #3898EC);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradientText 5s ease infinite;
+        margin-top: 0.8rem;
+        font-weight: 500;
         letter-spacing: 2px;
         text-transform: uppercase;
+        position: relative;
+        z-index: 2;
     }
     
     .agent-status {
-        font-size: 1rem;
+        font-size: 1.1rem;
         color: #00ff88;
-        margin-top: 0.5rem;
-        font-weight: 600;
+        margin-top: 1rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        position: relative;
+        z-index: 2;
+        animation: statusBlink 2s ease-in-out infinite;
     }
     
-    /* Status Dashboard */
+    @keyframes statusBlink {
+        0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(0, 255, 136, 0.8); }
+        50% { opacity: 0.7; text-shadow: 0 0 20px rgba(0, 255, 136, 1); }
+    }
+    
+    /* Enhanced Status Dashboard with 3D Cards */
     .status-dashboard {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
         gap: 1rem;
-        margin: 2rem 0;
+        margin: 1.5rem 0;
     }
     
     .status-card {
-        background: linear-gradient(145deg, rgba(0, 255, 255, 0.05) 0%, rgba(0, 150, 255, 0.05) 100%);
-        border: 1px solid rgba(0, 255, 255, 0.3);
+        background: rgba(5, 10, 20, 0.7);
+        backdrop-filter: blur(15px) saturate(180%);
+        -webkit-backdrop-filter: blur(15px) saturate(180%);
+        border: 1px solid rgba(10, 102, 194, 0.3);
         border-radius: 15px;
-        padding: 1.5rem;
+        padding: 1rem 0.8rem;
         text-align: center;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform: translateY(0);
+        box-shadow: 
+            0 4px 15px 0 rgba(10, 102, 194, 0.15),
+            inset 0 0 15px rgba(10, 102, 194, 0.03);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .status-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(10, 102, 194, 0.3),
+            transparent
+        );
+        transition: left 0.5s;
     }
     
     .status-card:hover {
-        border-color: #00ffff;
-        box-shadow: 0 5px 20px rgba(0, 255, 255, 0.2);
-        transform: translateY(-2px);
+        border-color: #0A66C2;
+        box-shadow: 
+            0 8px 25px rgba(10, 102, 194, 0.3),
+            inset 0 0 25px rgba(10, 102, 194, 0.1),
+            0 0 40px rgba(56, 152, 236, 0.2);
+        transform: translateY(-5px) scale(1.02);
+    }
+    
+    .status-card:hover::before {
+        left: 100%;
     }
     
     .status-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
+        font-size: 2rem;
+        margin-bottom: 0.6rem;
         display: block;
+        animation: iconFloat 3s ease-in-out infinite;
+        filter: drop-shadow(0 0 8px rgba(10, 102, 194, 0.5));
+    }
+    
+    @keyframes iconFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
     }
     
     .status-title {
-        color: #00ffff;
+        color: #3898EC;
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 1px;
+        margin-bottom: 0.3rem;
     }
     
     .status-value {
         color: #ffffff;
-        font-size: 1.2rem;
-        margin-top: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-top: 0.3rem;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
     }
     
-    /* Control Panels */
+    /* Enhanced Control Panels with Glassmorphism */
     .control-panel {
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 255, 255, 0.03) 100%);
-        border: 2px solid rgba(0, 255, 255, 0.2);
-        border-radius: 20px;
-        padding: 2rem;
-        margin: 2rem 0;
-        backdrop-filter: blur(15px);
+        background: rgba(5, 10, 20, 0.7);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(10, 102, 194, 0.3);
+        border-radius: 18px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        box-shadow: 
+            0 5px 20px 0 rgba(10, 102, 194, 0.15),
+            inset 0 0 20px rgba(10, 102, 194, 0.05);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .control-panel:hover {
+        border-color: rgba(10, 102, 194, 0.7);
+        box-shadow: 
+            0 12px 48px 0 rgba(10, 102, 194, 0.35),
+            inset 0 0 50px rgba(10, 102, 194, 0.12);
+    }
+    
+    .control-panel::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #0A66C2, #3898EC, #0A66C2, #3898EC);
+        background-size: 400% 400%;
+        border-radius: 25px;
+        opacity: 0;
+        z-index: -1;
+        animation: borderGlow 3s ease infinite;
+        transition: opacity 0.3s;
+    }
+    
+    .control-panel:hover::before {
+        opacity: 0.5;
+    }
+    
+    @keyframes borderGlow {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
     }
     
     .panel-title {
         font-family: 'Orbitron', monospace;
-        font-size: 1.8rem;
-        color: #00ffff;
-        margin-bottom: 1.5rem;
+        font-size: 1.3rem;
+        background: linear-gradient(135deg, #0A66C2, #3898EC);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1.2rem;
         text-align: center;
         font-weight: 700;
         letter-spacing: 3px;
         text-transform: uppercase;
+        filter: drop-shadow(0 0 15px rgba(10, 102, 194, 0.5));
     }
     
-    /* Agent Buttons */
+    /* Futuristic Buttons with LinkedIn Theme */
     .stButton > button {
-        background: linear-gradient(135deg, #00ffff 0%, #0096ff 100%);
-        color: #000000;
+        background: linear-gradient(135deg, #0A66C2 0%, #3898EC 50%, #0A66C2 100%);
+        background-size: 200% 200%;
+        color: #ffffff;
         border: none;
         border-radius: 25px;
-        padding: 1rem 2.5rem;
+        padding: 0.8rem 2rem;
         font-weight: 700;
-        font-size: 1.1rem;
+        font-size: 0.95rem;
         letter-spacing: 2px;
         text-transform: uppercase;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 20px rgba(0, 255, 255, 0.3);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 
+            0 4px 15px rgba(10, 102, 194, 0.4),
+            inset 0 0 15px rgba(255, 255, 255, 0.08);
         font-family: 'Orbitron', monospace;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    
+    .stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .stButton > button:hover::before {
+        width: 300px;
+        height: 300px;
     }
     
     .stButton > button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(0, 255, 255, 0.5);
-        background: linear-gradient(135deg, #0096ff 0%, #00ffff 100%);
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 
+            0 15px 40px rgba(10, 102, 194, 0.7),
+            inset 0 0 30px rgba(255, 255, 255, 0.2),
+            0 0 60px rgba(56, 152, 236, 0.5);
+        background-position: 100% 0;
+        animation: neonPulse 1.5s ease-in-out infinite;
     }
     
-    /* Input Fields */
+    @keyframes neonPulse {
+        0%, 100% { filter: brightness(1); }
+        50% { filter: brightness(1.2); }
+    }
+    
+    .stButton > button:active {
+        transform: translateY(-2px) scale(1.02);
+    }
+    
+    /* Enhanced Input Fields with Glow Effect */
     .stTextInput > div > div > input,
     .stTextArea > div > div > textarea,
     .stSelectbox > div > div > select {
-        background: rgba(0, 0, 0, 0.3);
-        border: 2px solid rgba(0, 255, 255, 0.3);
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(10, 102, 194, 0.3);
         border-radius: 15px;
         color: #ffffff;
-        font-size: 1.1rem;
-        padding: 1rem;
-        font-family: 'Rajdhani', sans-serif;
+        font-size: 1rem;
+        padding: 0.9rem;
+        font-family: 'Space Grotesk', sans-serif;
         font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
     }
     
     .stTextInput > div > div > input:focus,
-    .stTextArea > div > div > textarea:focus {
-        border-color: #00ffff;
-        box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    .stTextArea > div > div > textarea:focus,
+    .stSelectbox > div > div > select:focus {
+        border-color: #0A66C2;
+        box-shadow: 
+            0 0 20px rgba(10, 102, 194, 0.6),
+            inset 0 0 15px rgba(10, 102, 194, 0.15);
+        background: rgba(0, 0, 0, 0.6);
+        transform: translateY(-2px);
     }
     
-    /* Labels */
+    /* Placeholder styling */
+    .stTextInput > div > div > input::placeholder,
+    .stTextArea > div > div > textarea::placeholder {
+        color: rgba(56, 152, 236, 0.5);
+        font-style: italic;
+    }
+    
+    /* Enhanced Labels */
     .stTextInput > label,
     .stTextArea > label,
     .stSelectbox > label {
-        color: #00ffff !important;
-        font-weight: 600 !important;
-        font-size: 1rem !important;
+        color: #3898EC !important;
+        font-weight: 700 !important;
+        font-size: 1.05rem !important;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px rgba(10, 102, 194, 0.5);
+        margin-bottom: 0.8rem !important;
     }
     
-    /* Sidebar */
-    .css-1d391kg {
-        background: linear-gradient(180deg, rgba(10, 10, 15, 0.95) 0%, rgba(26, 26, 46, 0.95) 100%);
-        border-right: 2px solid rgba(0, 255, 255, 0.3);
+    /* Hide Sidebar Completely */
+    .css-1d391kg, [data-testid="stSidebar"] {
+        display: none !important;
     }
     
-    /* Success/Error Messages */
+    /* Remove sidebar toggle button */
+    button[kind="header"] {
+        display: none !important;
+    }
+    
+    /* Expand main content to full width */
+    .main .block-container {
+        max-width: 100% !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+    
+    /* Enhanced Success/Error/Warning/Info Messages */
     .stSuccess {
-        background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 200, 100, 0.1) 100%);
-        border: 2px solid #00ff88;
-        border-radius: 15px;
-        color: #00ff88;
+        background: rgba(0, 255, 136, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 2px solid #00ff88 !important;
+        border-radius: 18px !important;
+        color: #00ff88 !important;
+        padding: 1.2rem !important;
+        box-shadow: 0 5px 20px rgba(0, 255, 136, 0.2) !important;
+        animation: messageSlideIn 0.5s ease-out;
     }
     
     .stError {
-        background: linear-gradient(135deg, rgba(255, 0, 100, 0.1) 0%, rgba(200, 0, 50, 0.1) 100%);
-        border: 2px solid #ff0064;
-        border-radius: 15px;
-        color: #ff0064;
+        background: rgba(255, 0, 100, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 2px solid #ff0064 !important;
+        border-radius: 18px !important;
+        color: #ff0064 !important;
+        padding: 1.2rem !important;
+        box-shadow: 0 5px 20px rgba(255, 0, 100, 0.2) !important;
+        animation: messageSlideIn 0.5s ease-out;
     }
     
     .stWarning {
-        background: linear-gradient(135deg, rgba(255, 200, 0, 0.1) 0%, rgba(255, 150, 0, 0.1) 100%);
-        border: 2px solid #ffc800;
-        border-radius: 15px;
-        color: #ffc800;
+        background: rgba(255, 200, 0, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 2px solid #ffc800 !important;
+        border-radius: 18px !important;
+        color: #ffc800 !important;
+        padding: 1.2rem !important;
+        box-shadow: 0 5px 20px rgba(255, 200, 0, 0.2) !important;
+        animation: messageSlideIn 0.5s ease-out;
     }
     
     .stInfo {
-        background: linear-gradient(135deg, rgba(0, 150, 255, 0.1) 0%, rgba(0, 100, 200, 0.1) 100%);
-        border: 2px solid #0096ff;
-        border-radius: 15px;
-        color: #0096ff;
+        background: rgba(0, 150, 255, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 2px solid #0096ff !important;
+        border-radius: 18px !important;
+        color: #0096ff !important;
+        padding: 1.2rem !important;
+        box-shadow: 0 5px 20px rgba(0, 150, 255, 0.2) !important;
+        animation: messageSlideIn 0.5s ease-out;
     }
     
-    /* Progress Bars */
+    @keyframes messageSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Enhanced Progress Bars with Animated Gradient */
     .stProgress > div > div > div > div {
-        background: linear-gradient(90deg, #00ffff 0%, #0096ff 100%);
+        background: linear-gradient(90deg, #00ffff, #0096ff, #00ffff) !important;
+        background-size: 200% 200% !important;
+        animation: progressGlow 2s ease infinite !important;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.6) !important;
     }
     
-    /* Metrics */
+    @keyframes progressGlow {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    /* Enhanced Metrics with Glassmorphism */
     [data-testid="metric-container"] {
-        background: linear-gradient(135deg, rgba(0, 255, 255, 0.05) 0%, rgba(0, 150, 255, 0.05) 100%);
-        border: 1px solid rgba(0, 255, 255, 0.2);
-        padding: 1rem;
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(15px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(15px) saturate(180%) !important;
+        border: 2px solid rgba(0, 255, 255, 0.3) !important;
+        padding: 1.5rem !important;
+        border-radius: 18px !important;
+        box-shadow: 
+            0 8px 32px 0 rgba(0, 255, 255, 0.1),
+            inset 0 0 20px rgba(0, 255, 255, 0.03) !important;
+        transition: all 0.3s ease !important;
     }
     
-    /* Code Blocks */
+    [data-testid="metric-container"]:hover {
+        border-color: rgba(0, 255, 255, 0.6) !important;
+        box-shadow: 
+            0 12px 48px 0 rgba(0, 255, 255, 0.2),
+            inset 0 0 30px rgba(0, 255, 255, 0.05) !important;
+        transform: translateY(-5px) !important;
+    }
+    
+    /* Enhanced Code Blocks */
     .stCode {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(0, 255, 255, 0.3);
-        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.6) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 2px solid rgba(0, 255, 255, 0.3) !important;
+        border-radius: 15px !important;
+        box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.1) !important;
     }
     
     /* Hide Streamlit Branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     .stDeployButton {display: none;}
+    header {visibility: hidden;}
     
-    /* Loading Animation */
+    /* Enhanced Loading Animation */
     .loading-animation {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 2rem;
+        padding: 3rem;
     }
     
     .loading-spinner {
-        border: 4px solid rgba(0, 255, 255, 0.1);
-        border-top: 4px solid #00ffff;
+        border: 5px solid rgba(0, 255, 255, 0.1);
+        border-top: 5px solid #00ffff;
         border-radius: 50%;
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
         animation: spin 1s linear infinite;
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
     }
     
     @keyframes spin {
@@ -308,110 +613,263 @@ def load_agent_css():
         100% { transform: rotate(360deg); }
     }
     
-    /* Terminal-like output */
+    /* Terminal-like output with Neon Green Glow */
     .terminal-output {
-        background: #000000;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
         color: #00ff00;
         font-family: 'Courier New', monospace;
-        padding: 1rem;
-        border-radius: 10px;
-        border: 1px solid #00ff00;
-        margin: 1rem 0;
-        font-size: 0.9rem;
-        line-height: 1.4;
+        padding: 1.5rem;
+        border-radius: 15px;
+        border: 2px solid #00ff00;
+        margin: 1.5rem 0;
+        font-size: 1rem;
+        line-height: 1.6;
+        box-shadow: 
+            0 5px 25px rgba(0, 255, 0, 0.2),
+            inset 0 0 20px rgba(0, 255, 0, 0.1);
+        animation: terminalFlicker 0.1s infinite alternate;
     }
     
-    /* Enhanced Text Rendering */
+    @keyframes terminalFlicker {
+        0% { opacity: 0.98; }
+        100% { opacity: 1; }
+    }
+    
+    /* Enhanced Blog Content Text */
     .blog-content-text {
         color: #ffffff !important;
-        font-family: 'Rajdhani', sans-serif !important;
+        font-family: 'Space Grotesk', sans-serif !important;
         font-weight: 400 !important;
-        font-size: 1.1rem !important;
-        line-height: 1.8 !important;
+        font-size: 1.15rem !important;
+        line-height: 1.9 !important;
         text-align: justify !important;
-        padding: 1.5rem !important;
-        background: rgba(255, 255, 255, 0.02) !important;
-        border-radius: 10px !important;
+        padding: 2rem !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 15px !important;
         white-space: pre-wrap !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         text-rendering: optimizeLegibility !important;
         -webkit-font-smoothing: antialiased !important;
         -moz-osx-font-smoothing: grayscale !important;
+        box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.05) !important;
     }
     
-    /* Blog Title Styling */
+    /* Enhanced Blog Title Styling */
     .blog-title {
-        color: #00ffff !important;
+        background: linear-gradient(135deg, #00ffff, #0096ff) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
         font-family: 'Orbitron', monospace !important;
         font-weight: 700 !important;
         text-align: center !important;
         margin: 0 !important;
-        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5) !important;
+        filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.6)) !important;
     }
     
-    /* Content Container */
+    /* Enhanced Content Container */
     .content-container {
-        background: rgba(0, 0, 0, 0.3) !important;
-        border: 2px solid rgba(0, 255, 255, 0.2) !important;
-        border-radius: 15px !important;
-        padding: 2rem !important;
-        margin: 1.5rem 0 !important;
-        backdrop-filter: blur(10px) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(15px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(15px) saturate(180%) !important;
+        border: 2px solid rgba(0, 255, 255, 0.3) !important;
+        border-radius: 20px !important;
+        padding: 2.5rem !important;
+        margin: 2rem 0 !important;
+        box-shadow: 
+            0 8px 32px 0 rgba(0, 255, 255, 0.15),
+            inset 0 0 30px rgba(0, 255, 255, 0.05) !important;
     }
     
-    /* Section Headers */
+    /* Enhanced Section Headers */
     .section-header {
-        color: #00ffff !important;
+        background: linear-gradient(90deg, #00ffff, #0096ff) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
         font-family: 'Orbitron', monospace !important;
         font-weight: 600 !important;
-        margin-bottom: 1rem !important;
+        margin-bottom: 1.5rem !important;
         text-transform: uppercase !important;
-        letter-spacing: 2px !important;
+        letter-spacing: 3px !important;
+        filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5)) !important;
     }
     
-    /* Hashtag and CTA Styling */
+    /* Enhanced Hashtag and CTA Styling */
     .meta-content {
         color: #ffffff !important;
-        font-family: 'Rajdhani', sans-serif !important;
+        font-family: 'Space Grotesk', sans-serif !important;
         font-weight: 500 !important;
-        line-height: 1.6 !important;
-        padding: 1rem !important;
-        border-radius: 8px !important;
+        line-height: 1.7 !important;
+        padding: 1.2rem !important;
+        border-radius: 12px !important;
         overflow-y: auto !important;
-        max-height: 120px !important;
+        max-height: 140px !important;
     }
     
-    /* Expander styling */
+    /* Enhanced Expander styling */
     .streamlit-expanderHeader {
-        background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(0, 150, 255, 0.1) 100%) !important;
-        border: 1px solid rgba(0, 255, 255, 0.3) !important;
-        border-radius: 10px !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 2px solid rgba(0, 255, 255, 0.3) !important;
+        border-radius: 15px !important;
         color: #00ffff !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
+        padding: 1rem !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .streamlit-expanderHeader:hover {
+        border-color: rgba(0, 255, 255, 0.6) !important;
+        box-shadow: 0 5px 20px rgba(0, 255, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
     }
     
     .streamlit-expanderContent {
-        background: rgba(0, 0, 0, 0.2) !important;
-        border: 1px solid rgba(0, 255, 255, 0.2) !important;
-        border-radius: 0 0 10px 10px !important;
-        padding: 1.5rem !important;
+        background: rgba(0, 0, 0, 0.3) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 2px solid rgba(0, 255, 255, 0.2) !important;
+        border-radius: 0 0 15px 15px !important;
+        padding: 2rem !important;
+        box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.05) !important;
     }
     
-    /* Markdown text improvements */
+    /* Enhanced Markdown text improvements */
     .stMarkdown {
-        font-family: 'Rajdhani', sans-serif !important;
+        font-family: 'Space Grotesk', sans-serif !important;
     }
     
     .stMarkdown p {
         color: #ffffff !important;
-        line-height: 1.6 !important;
-        margin-bottom: 1rem !important;
+        line-height: 1.8 !important;
+        margin-bottom: 1.2rem !important;
     }
     
     .stMarkdown strong {
+        background: linear-gradient(90deg, #00ffff, #0096ff) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 0.5rem;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(0, 255, 255, 0.2);
+        border-radius: 12px;
+        color: #00ffff;
+        font-weight: 600;
+        padding: 0.8rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background: rgba(0, 255, 255, 0.1);
+        border-color: rgba(0, 255, 255, 0.5);
+        box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 150, 255, 0.2)) !important;
+        border-color: #00ffff !important;
+        box-shadow: 0 5px 20px rgba(0, 255, 255, 0.3) !important;
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #0A66C2, #3898EC);
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(10, 102, 194, 0.5);
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #3898EC, #0A66C2);
+        box-shadow: 0 0 15px rgba(10, 102, 194, 0.8);
+    }
+    
+    /* Checkbox styling */
+    .stCheckbox {
+        color: #00ffff !important;
+    }
+    
+    .stCheckbox > label {
         color: #00ffff !important;
         font-weight: 600 !important;
+    }
+    
+    /* Download button special styling */
+    .stDownloadButton > button {
+        background: linear-gradient(135deg, #8000ff 0%, #4000ff 100%) !important;
+        box-shadow: 0 5px 20px rgba(128, 0, 255, 0.4) !important;
+    }
+    
+    .stDownloadButton > button:hover {
+        background: linear-gradient(135deg, #4000ff 0%, #8000ff 100%) !important;
+        box-shadow: 0 10px 30px rgba(128, 0, 255, 0.6) !important;
+    }
+    
+    /* Sidebar button styling */
+    [data-testid="stSidebar"] .stButton > button {
+        width: 100%;
+        background: linear-gradient(135deg, #0A66C2, #3898EC);
+        color: #ffffff;
+        border: 1px solid rgba(10, 102, 194, 0.5);
+        border-radius: 12px;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 3px 10px rgba(10, 102, 194, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    [data-testid="stSidebar"] .stButton > button:hover {
+        background: linear-gradient(135deg, #3898EC, #0A66C2);
+        box-shadow: 0 5px 15px rgba(10, 102, 194, 0.5);
+        transform: translateY(-2px);
+    }
+    
+    /* Footer fixed at bottom */
+    .main .block-container {
+        padding-bottom: 80px;
+    }
+    
+    /* Footer container styling - fixed at bottom */
+    .footer-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background: rgba(2, 5, 10, 0.95);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(10, 102, 194, 0.3);
+        z-index: 999;
+        padding: 0.8rem 0;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -432,16 +890,6 @@ def initialize_session_state():
         st.session_state.generated_blog = None
     if 'generation_topic' not in st.session_state:
         st.session_state.generation_topic = ''
-
-# Agent Header Component
-def render_agent_header():
-    st.markdown("""
-    <div class="agent-header">
-        <div class="agent-title">🤖 AI BLOG AGENT</div>
-        <div class="agent-subtitle">Professional Content Creator & Distribution System</div>
-        <div class="agent-status">● ONLINE | READY FOR DEPLOYMENT</div>
-    </div>
-    """, unsafe_allow_html=True)
 
 # Status Dashboard Component
 def render_status_dashboard():
@@ -532,9 +980,6 @@ def render_blog_generator():
                 st.rerun()
             else:
                 st.error("⚠️ Please enter a blog topic")
-        
-        if st.button("💡 GET AI SUGGESTIONS"):
-            get_topic_suggestions()
 
 def generate_single_blog():
     """Generate blog with stored parameters and navigate to results"""
@@ -913,136 +1358,69 @@ def send_multiple_emails(blog_post, recipients, subject_prefix, validate_emails)
     except Exception as e:
         st.error(f"🚨 Batch email sending failed: {str(e)}")
 
-def get_topic_suggestions():
-    with st.form("topic_suggestions_form"):
-        st.markdown("### 💡 AI TOPIC SUGGESTIONS")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            industry = st.text_input("🏢 INDUSTRY", placeholder="e.g., Technology, Marketing, Finance")
-        with col2:
-            keywords = st.text_input("🔍 KEYWORDS", placeholder="AI, automation, trends (comma-separated)")
-        
-        if st.form_submit_button("🧠 GET AI SUGGESTIONS"):
-            if industry:
-                try:
-                    agent, success, message = initialize_agent()
-                    if not success:
-                        st.error(f"🚨 {message}")
-                        return
-                    
-                    with st.spinner("🤖 AI is generating topic suggestions..."):
-                        keyword_list = [kw.strip() for kw in keywords.split(',')] if keywords else None
-                        topics = agent.get_topic_suggestions(industry, keyword_list)
-                    
-                    if topics:
-                        st.success("💡 AI-Generated Topic Suggestions:")
-                        for i, topic in enumerate(topics, 1):
-                            if st.button(f"📝 {i}. {topic}", key=f"topic_{i}"):
-                                st.session_state['selected_topic'] = topic
-                                st.rerun()
-                    else:
-                        st.warning("No suggestions generated. Try different keywords.")
-                        
-                except Exception as e:
-                    st.error(f"🚨 Suggestion generation failed: {str(e)}")
-            else:
-                st.error("⚠️ Please enter an industry")
-
-def render_sidebar():
-    with st.sidebar:
-        st.markdown("""
-        <div class="agent-header" style="margin-bottom: 1rem;">
-            <div style="font-size: 1.5rem; font-weight: 900;">🤖 AGENT CONTROL</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Navigation Controls
-        st.markdown("### 🗺️ NAVIGATION")
-        
-        current_page = st.session_state.current_page
-        if current_page != 'home':
-            if st.button("🏠 HOME"):
-                st.session_state.current_page = 'home'
-                st.session_state.generated_blog = None
-                st.rerun()
-        
-        if current_page == 'results':
-            if st.button("🚀 NEW BLOG"):
-                st.session_state.current_page = 'home'
-                st.session_state.generated_blog = None
-                st.rerun()
-        
-        st.markdown("---")
-        
-        # Agent Status
-        agent, success, message = initialize_agent()
-        
-        if success:
-            st.success("🟢 AGENT ONLINE")
-            st.info("📡 Connected to Google AI")
-            st.info("📧 Email System Ready")
-        else:
-            st.error("🔴 AGENT OFFLINE")
-            st.error(f"⚠️ {message}")
-        
-        st.markdown("---")
-        
-        # Quick Stats
-        st.markdown("### 📊 MISSION STATS")
-        st.metric("🎯 Blogs Generated", st.session_state.total_generated)
-        st.metric("📧 Emails Deployed", st.session_state.total_emails_sent)
-        
-        st.markdown("---")
-        
-        # Recent Activity
-        if st.session_state.blog_history:
-            st.markdown("### 🕒 RECENT OPERATIONS")
-            for i, blog in enumerate(st.session_state.blog_history[-3:], 1):
-                st.text(f"🔸 {blog['title'][:30]}...")
-                st.text(f"   📅 {blog['generated_at']}")
-        
-        st.markdown("---")
-        
-        # System Controls
-        st.markdown("### ⚙️ SYSTEM CONTROLS")
-        
-        if st.button("🔄 RESET STATS"):
-            st.session_state.total_generated = 0
-            st.session_state.total_emails_sent = 0
-            st.session_state.blog_history = []
-            st.success("✅ Stats reset")
-            st.rerun()
-        
-        if st.button("🧪 RUN DIAGNOSTICS"):
-            run_system_diagnostics()
-
-def run_system_diagnostics():
-    st.markdown("### 🔍 SYSTEM DIAGNOSTICS")
+def render_top_navigation():
+    """Render top navigation bar spanning full width"""
     
-    with st.spinner("🔧 Running system diagnostics..."):
-        # Test agent initialization
-        agent, success, message = initialize_agent()
-        
-        if success:
-            st.success("✅ Agent initialization: PASS")
-            
-            # Test email connection
-            try:
-                email_test = agent.email_sender.test_connection()
-                if email_test:
-                    st.success("✅ Email system: PASS")
-                else:
-                    st.error("❌ Email system: FAIL")
-            except:
-                st.error("❌ Email system: FAIL")
-        else:
-            st.error(f"❌ Agent initialization: FAIL - {message}")
+    # Main Navigation Bar - Full Width
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, rgba(10, 102, 194, 0.25) 0%, rgba(2, 5, 10, 0.95) 100%);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 2px solid rgba(10, 102, 194, 0.4);
+        border-radius: 20px;
+        padding: 1.8rem 2.5rem;
+        margin: -1rem -2rem 2rem -2rem;
+        box-shadow: 0 8px 32px rgba(10, 102, 194, 0.3);
+        position: sticky;
+        top: 0;
+        z-index: 999;
+    ">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+            <div style="flex: 1; min-width: 250px;">
+                <div style="
+                    font-size: 2rem; 
+                    font-weight: 900; 
+                    font-family: 'Orbitron', sans-serif;
+                    background: linear-gradient(90deg, #00ffff, #0096ff);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    letter-spacing: 3px;
+                ">💼 LINKEDGENIUS</div>
+                <div style="
+                    font-size: 0.9rem;
+                    color: rgba(255, 255, 255, 0.7);
+                    letter-spacing: 1.5px;
+                    font-weight: 500;
+                    margin-top: 0.5rem;
+                ">AI-Powered Content Creation Platform</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 2rem;">
+                <div style="
+                    background: rgba(0, 255, 136, 0.15);
+                    border: 2px solid rgba(0, 255, 136, 0.4);
+                    border-radius: 12px;
+                    padding: 0.8rem 1.5rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.8rem;
+                ">
+                    <span style="font-size: 1.2rem;">🟢</span>
+                    <span style="
+                        color: #00ff88;
+                        font-weight: 700;
+                        letter-spacing: 1px;
+                        font-size: 0.95rem;
+                    ">AGENT ONLINE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Generation Page
 def render_generation_page():
-    render_agent_header()
-    
     st.markdown("""
     <div class="control-panel">
         <div class="panel-title">🤖 GENERATING YOUR BLOG POST</div>
@@ -1078,8 +1456,6 @@ def render_generation_page():
 
 # Results Page
 def render_results_page():
-    render_agent_header()
-    
     # Navigation buttons
     col1, col2, col3 = st.columns([1, 2, 1])
     with col1:
@@ -1107,29 +1483,49 @@ def main():
     load_agent_css()
     initialize_session_state()
     
+    # Render top navigation on all pages
+    render_top_navigation()
+    
     # Page routing based on current_page
     if st.session_state.current_page == 'home':
         # Render home page
-        render_agent_header()
         render_status_dashboard()
         render_blog_generator()
-        render_sidebar()
         
-        # Footer
-        st.markdown("---")
+        # Footer - wrapped in container to stay at bottom
+        st.markdown('<div class="footer-container">', unsafe_allow_html=True)
         st.markdown("""
-        <div style="text-align: center; color: #666; margin-top: 2rem;">
-            <p>🤖 AI Blog Agent | Powered by Google Gemini 2.5-Flash | Built with ❤️ using Streamlit</p>
+        <div style="text-align: center; color: #3898EC; font-weight: 500;">
+            <p style="margin: 0;">💼 LinkedGenius | AI-Powered Content Creation | Powered by Google Gemini 2.5-Flash</p>
         </div>
         """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
         
     elif st.session_state.current_page == 'generating':
         # Render generation page
         render_generation_page()
         
+        # Footer
+        st.markdown('<div class="footer-container">', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align: center; color: #3898EC; font-weight: 500;">
+            <p style="margin: 0;">💼 LinkedGenius | AI-Powered Content Creation | Powered by Google Gemini 2.5-Flash</p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
     elif st.session_state.current_page == 'results':
         # Render results page
         render_results_page()
+        
+        # Footer
+        st.markdown('<div class="footer-container">', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align: center; color: #3898EC; font-weight: 500;">
+            <p style="margin: 0;">💼 LinkedGenius | AI-Powered Content Creation | Powered by Google Gemini 2.5-Flash</p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

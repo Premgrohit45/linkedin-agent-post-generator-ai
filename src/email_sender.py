@@ -9,14 +9,11 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 import os
-from dotenv import load_dotenv
 import logging
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 import json
-
-# Load environment variables
-load_dotenv()
+from .config import get_secret
 
 class EmailSender:
     """
@@ -25,9 +22,9 @@ class EmailSender:
     
     def __init__(self):
         """Initialize the email sender with SMTP configuration."""
-        self.sender_email = os.getenv('EMAIL_SENDER')
-        self.sender_password = os.getenv('EMAIL_PASSWORD')
-        self.recipient_email = os.getenv('EMAIL_RECIPIENT')
+        self.sender_email = get_secret('EMAIL_SENDER')
+        self.sender_password = get_secret('EMAIL_PASSWORD')
+        self.recipient_email = get_secret('EMAIL_RECIPIENT')
         
         if not all([self.sender_email, self.sender_password]):
             raise ValueError("Email credentials not found. Please set EMAIL_SENDER and EMAIL_PASSWORD in .env file")
@@ -109,29 +106,29 @@ class EmailSender:
         
         for recipient in recipients:
             try:
-                # Use personalized subject if provided, otherwise use default
+                
                 if personalized_subjects and recipient in personalized_subjects:
                     custom_subject = personalized_subjects[recipient]
                 else:
                     custom_subject = f"{subject_prefix}: {blog_post.get('title', 'Untitled')}"
                 
-                # Create email message
+                
                 message = MIMEMultipart("alternative")
                 message["Subject"] = custom_subject
                 message["From"] = self.sender_email
                 message["To"] = recipient
                 
-                # Create email content
+            
                 email_body = self._create_email_body(blog_post)
                 
-                # Create plain text and HTML versions
+            
                 text_part = MIMEText(email_body, "plain")
                 html_part = MIMEText(self._create_html_body(blog_post), "html")
                 
                 message.attach(text_part)
                 message.attach(html_part)
                 
-                # Send email
+                
                 self._send_email(message, recipient)
                 
                 results[recipient] = True
@@ -161,7 +158,7 @@ class EmailSender:
         results = {}
         
         if send_separately:
-            # Send each blog post as a separate email
+            
             for i, post in enumerate(blog_posts):
                 post_title = post.get('title', f'Post {i+1}')
                 success = self.send_blog_post(
@@ -171,7 +168,7 @@ class EmailSender:
                 )
                 results[post_title] = success
         else:
-            # Send all posts in one email
+            
             success = self._send_combined_posts(blog_posts, recipient)
             results['Combined Posts'] = success
         
@@ -197,17 +194,17 @@ class EmailSender:
             if not recipient:
                 raise ValueError("No recipient email specified")
             
-            # Create email message
+    
             message = MIMEMultipart()
             message["Subject"] = f"LinkedIn Blog Post (with attachment): {blog_post.get('title', 'Untitled')}"
             message["From"] = self.sender_email
             message["To"] = recipient
             
-            # Add email body
+    
             email_body = self._create_email_body(blog_post)
             message.attach(MIMEText(email_body, "plain"))
             
-            # Add attachment
+            
             if os.path.exists(attachment_path):
                 with open(attachment_path, "rb") as attachment:
                     part = MIMEBase('application', 'octet-stream')
@@ -221,7 +218,7 @@ class EmailSender:
                 )
                 message.attach(part)
             
-            # Send email
+        
             self._send_email(message, recipient)
             
             self.logger.info(f"Blog post email with attachment sent successfully to {recipient}")
@@ -322,14 +319,13 @@ LinkedIn Blog Agent
             recipient = recipient or self.recipient_email
             if not recipient:
                 raise ValueError("No recipient email specified")
-            
-            # Create email message
+
             message = MIMEMultipart("alternative")
             message["Subject"] = f"Multiple LinkedIn Blog Posts - {len(blog_posts)} Posts Generated"
             message["From"] = self.sender_email
             message["To"] = recipient
             
-            # Create combined email body
+            
             combined_body = f"Hello!\n\nI've generated {len(blog_posts)} LinkedIn blog posts for you:\n\n"
             
             for i, post in enumerate(blog_posts, 1):
@@ -337,11 +333,11 @@ LinkedIn Blog Agent
                 combined_body += self._create_email_body(post)
                 combined_body += "\n" + "="*50 + "\n\n"
             
-            # Create plain text and HTML versions
+            
             text_part = MIMEText(combined_body, "plain")
             message.attach(text_part)
             
-            # Send email
+            
             self._send_email(message, recipient)
             
             self.logger.info(f"Combined blog posts email sent successfully to {recipient}")
@@ -356,12 +352,11 @@ LinkedIn Blog Agent
         Send the email using SMTP.
         """
         try:
-            # Create SMTP session
+            
             server = smtplib.SMTP(self.smtp_server, self.smtp_port)
             server.starttls()  # Enable security
             server.login(self.sender_email, self.sender_password)
             
-            # Send email
             text = message.as_string()
             server.sendmail(self.sender_email, recipient, text)
             server.quit()
@@ -440,7 +435,7 @@ LinkedIn Blog Agent
             }
         }
         
-        # Validate all emails first
+        
         validation_results = self.validate_recipients(recipients)
         results['validation'] = validation_results
         
@@ -450,14 +445,14 @@ LinkedIn Blog Agent
         results['summary']['valid_emails'] = len(valid_emails)
         results['summary']['invalid_emails'] = len(invalid_emails)
         
-        # Log invalid emails
+        
         if invalid_emails:
             self.logger.warning(f"Found {len(invalid_emails)} invalid emails: {invalid_emails}")
             if not skip_invalid and invalid_emails:
                 results['error'] = f"Invalid emails found: {invalid_emails}"
                 return results
+
         
-        # Send to valid emails only
         if valid_emails:
             sending_results = self.send_to_multiple_recipients(
                 blog_post=blog_post,
@@ -466,7 +461,7 @@ LinkedIn Blog Agent
             )
             results['sending'] = sending_results
             
-            # Count successful sends
+            
             results['summary']['emails_sent'] = sum(1 for success in sending_results.values() if success)
             results['summary']['emails_failed'] = len(sending_results) - results['summary']['emails_sent']
         
@@ -496,7 +491,7 @@ LinkedIn Blog Agent
 if __name__ == "__main__":
     # Example usage
     try:
-        # Initialize email sender
+        
         email_sender = EmailSender()
         
         # Test connection
