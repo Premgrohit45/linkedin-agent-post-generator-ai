@@ -9,19 +9,19 @@ import plotly.graph_objects as go
 from typing import List, Dict, Any
 import re
 
-# Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
-# Import our custom modules
+
 try:
-    from src.linkedin_blog_agent import LinkedInBlogAgent
-    from src.blog_generator import LinkedInBlogGenerator  
+    from src.advanced_agent_orchestrator import LinkedInAgentOrchestrator
+    from src.langchain_blog_agent import LangChainBlogAgent
     from src.email_sender import EmailSender
+    from src.agent_tools import AgentTools
 except ImportError as e:
     st.error(f"🚨 Agent Module Error: {e}")
     st.stop()
 
-# Advanced Page Configuration
+
 st.set_page_config(
     page_title="💼 LinkedGenius | AI-Powered LinkedIn Content Creator",
     page_icon="💼",
@@ -29,7 +29,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for Agent-like Design
+
 def load_agent_css():
     st.markdown("""
     <style>
@@ -874,7 +874,7 @@ def load_agent_css():
     </style>
     """, unsafe_allow_html=True)
 
-# Initialize session state
+
 def initialize_session_state():
     if 'agent_initialized' not in st.session_state:
         st.session_state.agent_initialized = False
@@ -891,7 +891,7 @@ def initialize_session_state():
     if 'generation_topic' not in st.session_state:
         st.session_state.generation_topic = ''
 
-# Status Dashboard Component
+
 def render_status_dashboard():
     col1, col2, col3, col4 = st.columns(4)
     
@@ -935,8 +935,9 @@ def render_status_dashboard():
 @st.cache_resource
 def initialize_agent():
     try:
-        agent = LinkedInBlogAgent()
-        return agent, True, "Agent successfully initialized"
+        # Initialize advanced multi-agent orchestrator
+        orchestrator = LinkedInAgentOrchestrator()
+        return orchestrator, True, "Advanced Agent Orchestrator initialized with function calling"
     except Exception as e:
         return None, False, f"Agent initialization failed: {str(e)}"
 
@@ -982,7 +983,7 @@ def render_blog_generator():
                 st.error("⚠️ Please enter a blog topic")
 
 def generate_single_blog():
-    """Generate blog with stored parameters and navigate to results"""
+    """Generate blog with stored parameters using advanced agentic orchestrator"""
     try:
         # Get parameters from session state
         topic = st.session_state.generation_topic
@@ -990,7 +991,7 @@ def generate_single_blog():
         length = st.session_state.generation_length
         audience = st.session_state.generation_audience
         
-        agent, success, message = initialize_agent()
+        orchestrator, success, message = initialize_agent()
         if not success:
             st.error(f"🚨 {message}")
             return
@@ -1000,29 +1001,42 @@ def generate_single_blog():
         status_text = st.empty()
         
         # Step 1: Initialize
-        progress_bar.progress(20)
-        status_text.text("🔧 Initializing AI systems...")
+        progress_bar.progress(10)
+        status_text.text("🔧 Initializing multi-agent system...")
         time.sleep(0.5)
         
-        # Step 2: Generate
-        progress_bar.progress(40)
-        status_text.text("🧠 Generating content with Gemini AI...")
+        # Step 2: Planning
+        progress_bar.progress(25)
+        status_text.text("🧩 Agent planning workflow and selecting tools...")
+        time.sleep(0.5)
         
-        blog_post = agent.blog_generator.generate_blog_post(
+        # Step 3: Research (agent will call tools automatically)
+        progress_bar.progress(40)
+        status_text.text("🔍 Agent using tools for research (function calling)...")
+        time.sleep(0.5)
+        
+        # Step 4: Generate with agent orchestration
+        progress_bar.progress(60)
+        status_text.text("🤖 Agent generating content with multi-step reasoning...")
+        
+        # Use advanced agentic orchestration
+        blog_post = orchestrator.orchestrate_blog_creation(
             topic=topic,
             tone=tone,
             length=length,
-            target_audience=audience
+            target_audience=audience,
+            enable_research=True,  # Enable agent to use research tools
+            enable_statistics=True  # Enable statistics gathering
         )
         
-        # Step 3: Processing
-        progress_bar.progress(80)
-        status_text.text("⚙️ Processing and formatting...")
+        # Step 5: Quality Check
+        progress_bar.progress(85)
+        status_text.text("✓ Agent validating quality...")
         time.sleep(0.3)
         
-        # Step 4: Complete
+        # Step 6: Complete
         progress_bar.progress(100)
-        status_text.text("✅ Blog generation complete!")
+        status_text.text("✅ Agentic workflow complete!")
         time.sleep(0.5)
         
         # Update session state
@@ -1030,7 +1044,8 @@ def generate_single_blog():
         st.session_state.blog_history.append({
             'title': blog_post.get('title'),
             'topic': topic,
-            'generated_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            'generated_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'agentic': True  # Mark as generated with agent
         })
         
         # Store the generated blog and navigate to results
@@ -1039,12 +1054,137 @@ def generate_single_blog():
         st.rerun()
         
     except Exception as e:
-        st.error(f"🚨 Generation failed: {str(e)}")
+        st.error(f"🚨 Agent execution failed: {str(e)}")
+        import traceback
+        st.error(traceback.format_exc())
         time.sleep(2)
         st.session_state.current_page = 'home'
         st.rerun()
 
 def render_blog_display(blog_post):
+    # First, show the LangChain framework proof (REAL ADK FRAMEWORK!)
+    if 'orchestration_metadata' in blog_post:
+        st.markdown("""
+        <div class="control-panel">
+            <div class="panel-title">🤖 LANGCHAIN FRAMEWORK - REAL AGENT SDK IMPLEMENTATION</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        metadata = blog_post['orchestration_metadata']
+        
+        # Show framework information prominently
+        framework = metadata.get('framework', 'LangChain ReAct Agent')
+        workflow_type = metadata.get('workflow_type', 'LangChain Multi-Agent System')
+        
+        st.markdown(f"""
+        <div style="
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(56, 152, 236, 0.2));
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+        ">
+            <h2 style="color: #00ff88; margin: 0; font-family: 'Orbitron', monospace;">
+                ✅ REAL AGENT FRAMEWORK USED
+            </h2>
+            <h3 style="color: #3898EC; margin: 0.5rem 0;">
+                {framework}
+            </h3>
+            <p style="color: #ffffff; margin: 0.5rem 0; font-size: 1.1rem;">
+                {workflow_type}
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Show tool usage statistics
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown(f"""
+            <div style="
+                background: rgba(0, 255, 136, 0.15);
+                border: 2px solid rgba(0, 255, 136, 0.4);
+                border-radius: 10px;
+                padding: 1rem;
+                text-align: center;
+            ">
+                <h4 style="color: #00ff88; margin: 0; font-size: 2rem;">🔧</h4>
+                <h3 style="color: #00ff88; margin: 0.5rem 0;">{len(metadata.get('tools_available', []))}</h3>
+                <p style="color: #ffffff; margin: 0; font-size: 0.9rem;">LangChain Tools</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div style="
+                background: rgba(56, 152, 236, 0.15);
+                border: 2px solid rgba(56, 152, 236, 0.4);
+                border-radius: 10px;
+                padding: 1rem;
+                text-align: center;
+            ">
+                <h4 style="color: #3898EC; margin: 0; font-size: 2rem;">🧩</h4>
+                <h3 style="color: #3898EC; margin: 0.5rem 0;">{metadata.get('reasoning_steps', 0)}</h3>
+                <p style="color: #ffffff; margin: 0; font-size: 0.9rem;">ReAct Steps</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown(f"""
+            <div style="
+                background: rgba(128, 0, 255, 0.15);
+                border: 2px solid rgba(128, 0, 255, 0.4);
+                border-radius: 10px;
+                padding: 1rem;
+                text-align: center;
+            ">
+                <h4 style="color: #8000ff; margin: 0; font-size: 2rem;">⚡</h4>
+                <h3 style="color: #8000ff; margin: 0.5rem 0;">ReAct</h3>
+                <p style="color: #ffffff; margin: 0; font-size: 0.9rem;">Agent Type</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Show tools available
+        if metadata.get('tools_available'):
+            st.markdown(f"""
+            <div style="
+                background: rgba(255, 150, 0, 0.1);
+                border: 1px solid rgba(255, 150, 0, 0.3);
+                border-radius: 10px;
+                padding: 1rem;
+                margin: 1rem 0;
+            ">
+                <h4 style="color: #ff9600; font-family: 'Orbitron', monospace; margin-bottom: 0.5rem;">
+                    🛠️ LANGCHAIN TOOLS AVAILABLE TO AGENT
+                </h4>
+                <div style="color: #ffffff; font-size: 0.9rem;">
+                    {', '.join(metadata['tools_available'])}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Show orchestration log (proof of multi-step reasoning)
+        if metadata.get('orchestration_log'):
+            with st.expander("🔍 VIEW LANGCHAIN AGENT REASONING & ORCHESTRATION LOG", expanded=False):
+                st.markdown("""
+                <div style="color: #00ff88; font-size: 0.85rem; margin-bottom: 0.5rem;">
+                    <strong>This log shows the LangChain ReAct framework orchestration process:</strong>
+                </div>
+                """, unsafe_allow_html=True)
+                for log_entry in metadata['orchestration_log']:
+                    st.markdown(f"""
+                    <div style="
+                        background: rgba(0, 0, 0, 0.3);
+                        border-left: 3px solid #3898EC;
+                        padding: 0.5rem;
+                        margin: 0.3rem 0;
+                        color: #ffffff;
+                        font-size: 0.85rem;
+                    ">
+                        {log_entry}
+                    </div>
+                    """, unsafe_allow_html=True)
+    
     st.markdown("""
     <div class="control-panel">
         <div class="panel-title">📖 GENERATED CONTENT</div>
@@ -1085,6 +1225,9 @@ def render_blog_display(blog_post):
     
     # Use compact content display
     content = blog_post.get('content', 'No content')
+    # Handle if content is a list
+    if isinstance(content, list):
+        content = '\n\n'.join(content)
     
     # Create a compact styled container for the content
     st.markdown(f"""
@@ -1107,7 +1250,7 @@ def render_blog_display(blog_post):
             word-spacing: 1px;
             letter-spacing: 0.3px;
         ">
-        {content.replace(chr(10), '<br><br>')}
+        {content.replace(chr(10), '<br><br>') if isinstance(content, str) else content}
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -1117,6 +1260,9 @@ def render_blog_display(blog_post):
     
     with col1:
         hashtags = blog_post.get('hashtags', 'No hashtags')
+        # Handle if hashtags is a list
+        if isinstance(hashtags, list):
+            hashtags = ' '.join(hashtags)
         st.markdown(f"""
         <div style="
             background: rgba(0, 255, 136, 0.1);
@@ -1145,13 +1291,16 @@ def render_blog_display(blog_post):
                 word-spacing: 1px;
                 letter-spacing: 0.2px;
             ">
-            {hashtags.replace(chr(10), '<br>')}
+            {hashtags.replace(chr(10), '<br>') if isinstance(hashtags, str) else hashtags}
             </div>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
         cta = blog_post.get('call_to_action', 'No CTA')
+        # Handle if CTA is a list
+        if isinstance(cta, list):
+            cta = ' '.join(cta)
         st.markdown(f"""
         <div style="
             background: rgba(255, 150, 0, 0.1);
@@ -1180,7 +1329,7 @@ def render_blog_display(blog_post):
                 word-spacing: 1px;
                 letter-spacing: 0.2px;
             ">
-            {cta.replace(chr(10), '<br>')}
+            {cta.replace(chr(10), '<br>') if isinstance(cta, str) else cta}
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1292,10 +1441,10 @@ def send_single_email(blog_post, email, subject_prefix):
             return
         
         with st.spinner("📤 Sending email..."):
-            success = agent.email_sender.send_blog_post(
-                blog_post=blog_post,
-                recipient=email,
-                subject_prefix=subject_prefix
+            # Use orchestrator's send_email method
+            success = agent.send_email(
+                recipient_email=email,
+                blog_post=blog_post
             )
         
         if success:

@@ -32,11 +32,11 @@ class EmailSender:
         if not all([self.sender_email, self.sender_password]):
             raise ValueError("Email credentials not found. Please set EMAIL_SENDER and EMAIL_PASSWORD in .env file")
         
-        # SMTP Configuration (Gmail)
+    
         self.smtp_server = "smtp.gmail.com"
         self.smtp_port = 587
         
-        # Set up logging
+        
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
         
@@ -62,23 +62,23 @@ class EmailSender:
             if not recipient:
                 raise ValueError("No recipient email specified")
             
-            # Create email message
+            
             message = MIMEMultipart("alternative")
             message["Subject"] = f"{subject_prefix}: {blog_post.get('title', 'Untitled')}"
             message["From"] = self.sender_email
             message["To"] = recipient
             
-            # Create email content
+            
             email_body = self._create_email_body(blog_post)
             
-            # Create plain text and HTML versions
+        
             text_part = MIMEText(email_body, "plain")
             html_part = MIMEText(self._create_html_body(blog_post), "html")
             
             message.attach(text_part)
             message.attach(html_part)
             
-            # Send email
+            
             self._send_email(message, recipient)
             
             self.logger.info(f"Blog post email sent successfully to {recipient}")
@@ -492,16 +492,15 @@ LinkedIn Blog Agent
 
 
 if __name__ == "__main__":
-    # Example usage
+    
     try:
         
         email_sender = EmailSender()
         
-        # Test connection
+        
         if email_sender.test_connection():
             print("Email connection successful!")
-            
-            # Example blog post data
+
             sample_post = {
                 'title': 'Test Blog Post',
                 'content': 'This is a test blog post content.',
@@ -512,7 +511,7 @@ if __name__ == "__main__":
                 'tone': 'professional'
             }
             
-            # Send test email
+            
             success = email_sender.send_blog_post(sample_post)
             if success:
                 print("Test email sent successfully!")
