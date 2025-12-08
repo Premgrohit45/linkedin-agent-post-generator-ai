@@ -52,7 +52,7 @@ class LangChainPostAgent:
     def generate_post_with_langchain(self,
                                      topic: str,
                                      tone: str = "professional",
-                                     length: str = "medium",
+                                     length: int = 1,
                                      target_audience: str = "professionals") -> Dict[str, Any]:
         """
         Generate blog using LangChain agent
@@ -61,14 +61,16 @@ class LangChainPostAgent:
         """
         self.logger.info(f"🤖 LangChain Agent starting for: {topic}")
         
-        length_map = {"short": "150 words", "medium": "300 words", "long": "500 words"}
+        # Convert number of paragraphs to word count estimate
+        paragraphs_to_words = {1: "150 words", 2: "250 words", 3: "350 words", 4: "450 words", 5: "550 words", 6: "650 words", 7: "750 words", 8: "850 words", 9: "950 words", 10: "1000+ words"}
+        length_description = paragraphs_to_words.get(length, "300 words")
         
     
         task = f"""Create a professional LinkedIn post about "{topic}".
 
 Requirements:
 - Tone: {tone}
-- Length: {length_map[length]}
+- Length: {length_description} ({length} paragraph{'s' if length > 1 else ''})
 - Audience: {target_audience}
 
 Steps to follow:

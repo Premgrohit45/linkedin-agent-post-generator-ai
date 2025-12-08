@@ -26,7 +26,7 @@ st.set_page_config(
     page_title="💼 LinkedGenius | AI-Powered LinkedIn Content Creator",
     page_icon="💼",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 
@@ -986,6 +986,226 @@ def load_agent_css():
         padding: 0.8rem 0;
         box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
     }
+
+    /* ========== POPUP SLIDE-IN SIDEBAR CSS ========== */
+    
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1900;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Main Sidebar Panel */
+    .popup-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 320px;
+        background: linear-gradient(135deg, rgba(10, 20, 40, 0.95) 0%, rgba(13, 31, 45, 0.95) 100%);
+        backdrop-filter: blur(8px);
+        border-right: 2px solid #00ff88;
+        z-index: 2000;
+        transform: translateX(-100%);
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: inset -5px 0 20px rgba(0, 255, 136, 0.1);
+        overflow-y: auto;
+        padding: 0;
+    }
+    
+    .popup-sidebar.active {
+        transform: translateX(0);
+    }
+    
+    /* Sidebar Header */
+    .sidebar-header {
+        background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(56, 152, 236, 0.1) 100%);
+        border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+        padding: 1.5rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 2001;
+    }
+    
+    .sidebar-title {
+        color: #00ff88;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+    
+    .sidebar-close-btn {
+        background: none;
+        border: none;
+        color: #00ff88;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .sidebar-close-btn:hover {
+        color: #ffffff;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        transform: scale(1.1);
+    }
+    
+    /* Sidebar Content Container */
+    .sidebar-content {
+        padding: 1.5rem 1rem;
+    }
+    
+    /* Status Section */
+    .sidebar-section {
+        margin-bottom: 1.5rem;
+        background: rgba(0, 255, 136, 0.05);
+        border-left: 3px solid #00ff88;
+        padding: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-section:hover {
+        background: rgba(0, 255, 136, 0.1);
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+    }
+    
+    .sidebar-section-title {
+        color: #00ff88;
+        font-size: 0.9rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+    }
+    
+    /* Stat Item */
+    .sidebar-stat {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: #b0b8c1;
+        font-size: 0.9rem;
+    }
+    
+    .sidebar-stat:last-child {
+        border-bottom: none;
+    }
+    
+    .sidebar-stat-label {
+        color: #b0b8c1;
+    }
+    
+    .sidebar-stat-value {
+        color: #00ff88;
+        font-weight: bold;
+        font-size: 1.1rem;
+        text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+    }
+    
+    /* Sidebar Buttons */
+    .sidebar-buttons {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .sidebar-btn {
+        background: linear-gradient(135deg, rgba(0, 255, 136, 0.15) 0%, rgba(56, 152, 236, 0.15) 100%);
+        border: 1px solid #00ff88;
+        color: #00ff88;
+        padding: 0.8rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+    }
+    
+    .sidebar-btn:hover {
+        background: linear-gradient(135deg, rgba(0, 255, 136, 0.25) 0%, rgba(56, 152, 236, 0.25) 100%);
+        border-color: #3898EC;
+        color: #ffffff;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    .sidebar-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+    }
+    
+    /* Status Indicator */
+    .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #00ff88;
+        box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        margin-right: 0.5rem;
+        animation: statusPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes statusPulse {
+        0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 136, 0.8); }
+        50% { box-shadow: 0 0 20px rgba(0, 255, 136, 1); }
+    }
+    
+    /* Number Counter Animation */
+    .stat-counter {
+        display: inline-block;
+        font-weight: bold;
+        color: #00ff88;
+    }
+    
+    /* Hamburger Menu Button Style */
+    .hamburger-menu-btn {
+        background: none;
+        border: none;
+        color: #00ff88;
+        font-size: 1.8rem;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .hamburger-menu-btn:hover {
+        color: #ffffff;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        transform: scale(1.1);
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -997,6 +1217,8 @@ def initialize_session_state():
         st.session_state.post_history = []
     if 'total_generated' not in st.session_state:
         st.session_state.total_generated = 0
+    if 'total_posts_generated' not in st.session_state:
+        st.session_state.total_posts_generated = 0
     if 'total_emails_sent' not in st.session_state:
         st.session_state.total_emails_sent = 0
     if 'current_page' not in st.session_state:
@@ -1005,6 +1227,22 @@ def initialize_session_state():
         st.session_state.generated_post = None
     if 'generation_topic' not in st.session_state:
         st.session_state.generation_topic = ''
+    if 'generation_tone' not in st.session_state:
+        st.session_state.generation_tone = 'professional'
+    if 'generation_length' not in st.session_state:
+        st.session_state.generation_length = 1
+    if 'generation_audience' not in st.session_state:
+        st.session_state.generation_audience = 'professionals'
+    if 'sidebar_open' not in st.session_state:
+        st.session_state.sidebar_open = False
+    if 'agent_status' not in st.session_state:
+        st.session_state.agent_status = '🟢 Online'
+    if 'email_api_status' not in st.session_state:
+        st.session_state.email_api_status = '✓ Connected'
+    if 'web_search_status' not in st.session_state:
+        st.session_state.web_search_status = '✓ Active'
+    if 'current_model' not in st.session_state:
+        st.session_state.current_model = 'Gemini 2.5-Flash'
 
 
 def render_status_dashboard():
@@ -1078,7 +1316,7 @@ def render_post_generator():
         with col_a:
             tone = st.selectbox("🎨 TONE", ["professional", "casual", "inspirational", "technical"])
         with col_b:
-            length = st.selectbox("📏 LENGTH", ["short", "medium", "long"])
+            length = st.number_input("📝 PARAGRAPHS", min_value=1, max_value=10, value=1, step=1)
         
         audience = st.text_input("👥 TARGET AUDIENCE", value="professionals", placeholder="Target audience...")
     
@@ -1622,6 +1860,82 @@ def send_multiple_emails(post, recipients, subject_prefix, validate_emails):
     except Exception as e:
         st.error(f"🚨 Batch email sending failed: {str(e)}")
 
+
+def render_popup_sidebar():
+    """Render the futuristic popup slide-in sidebar"""
+    
+    st.markdown(f"""
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="document.getElementById('sidebarOverlay').classList.remove('active'); document.getElementById('popupSidebar').classList.remove('active');"></div>
+    
+    <div id="popupSidebar" class="popup-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">⚙️ SYSTEM</div>
+            <button class="sidebar-close-btn" onclick="document.getElementById('sidebarOverlay').classList.remove('active'); document.getElementById('popupSidebar').classList.remove('active');">✕</button>
+        </div>
+        
+        <div class="sidebar-content">
+            <!-- AGENT STATUS SECTION -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">🤖 AGENT STATUS</div>
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-label">System Status</span>
+                    <span class="sidebar-stat-value"><span class="status-indicator"></span>{st.session_state.agent_status}</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-label">AI Model</span>
+                    <span class="sidebar-stat-value">{st.session_state.current_model}</span>
+                </div>
+            </div>
+            
+            <!-- STATISTICS SECTION -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">📊 STATISTICS</div>
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-label">Posts Generated</span>
+                    <span class="sidebar-stat-value"><span class="stat-counter">{st.session_state.total_posts_generated}</span></span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-label">Emails Sent</span>
+                    <span class="sidebar-stat-value"><span class="stat-counter">{st.session_state.total_emails_sent}</span></span>
+                </div>
+            </div>
+            
+            <!-- CONNECTION STATUS SECTION -->
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">🔗 CONNECTIONS</div>
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-label">Email API</span>
+                    <span class="sidebar-stat-value">{st.session_state.email_api_status}</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-label">Web Search</span>
+                    <span class="sidebar-stat-value">{st.session_state.web_search_status}</span>
+                </div>
+            </div>
+            
+            <!-- CONTROL BUTTONS -->
+            <div class="sidebar-buttons">
+                <button class="sidebar-btn" onclick="alert('📊 Stats Reset!'); location.reload();">🔄 Reset Stats</button>
+                <button class="sidebar-btn" onclick="alert('🔍 Running Diagnostics...');">🔍 Diagnostics</button>
+                <button class="sidebar-btn" onclick="alert('💾 Logs Exported!');">💾 Export Logs</button>
+                <button class="sidebar-btn" onclick="alert('⚙️ Settings Coming Soon!');">⚙️ Settings</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openSidebar() {{
+            document.getElementById('sidebarOverlay').classList.add('active');
+            document.getElementById('popupSidebar').classList.add('active');
+        }}
+        
+        function closeSidebar() {{
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.getElementById('popupSidebar').classList.remove('active');
+        }}
+    </script>
+    """, unsafe_allow_html=True)
+
 def render_top_navigation():
     """Render top navigation bar spanning full width"""
     
@@ -1641,7 +1955,8 @@ def render_top_navigation():
         z-index: 999;
     ">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
-            <div style="flex: 1; min-width: 250px;">
+            <div style="display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 250px;">
+                <button class="hamburger-menu-btn" id="hamburgerBtn" onclick="document.getElementById('sidebarOverlay').classList.add('active'); document.getElementById('popupSidebar').classList.add('active');" style="cursor: pointer;">☰</button>
                 <div style="
                     font-size: 2rem; 
                     font-weight: 900; 
@@ -1705,7 +2020,7 @@ def render_generation_page():
             <h4 style="color: #00ffff; margin-bottom: 1rem;">📋 GENERATION PARAMETERS</h4>
             <p style="color: #ffffff; margin: 0.5rem 0;"><strong>Topic:</strong> {st.session_state.generation_topic}</p>
             <p style="color: #ffffff; margin: 0.5rem 0;"><strong>Tone:</strong> {st.session_state.generation_tone}</p>
-            <p style="color: #ffffff; margin: 0.5rem 0;"><strong>Length:</strong> {st.session_state.generation_length}</p>
+            <p style="color: #ffffff; margin: 0.5rem 0;"><strong>Paragraphs:</strong> {st.session_state.generation_length}</p>
             <p style="color: #ffffff; margin: 0.5rem 0;"><strong>Audience:</strong> {st.session_state.generation_audience}</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1845,6 +2160,60 @@ def render_neon_sidebar():
 def main():
     load_agent_css()
     initialize_session_state()
+    
+    # Render the popup slide-in sidebar
+    render_popup_sidebar()
+    
+    # Add sidebar stats
+    with st.sidebar:
+        st.markdown("""
+        <style>
+        .sidebar-stats {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(56, 152, 236, 0.1) 100%);
+            border-left: 3px solid #00ff88;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 0.95rem;
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            color: #b0b8c1;
+        }
+        .stat-value {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        </style>
+        <div class="sidebar-stats">
+            <h3 style="color: #00ff88; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">📊 Statistics</h3>
+            <div class="stat-item">
+                <span class="stat-label">Posts Generated</span>
+                <span class="stat-value">{st.session_state.total_posts_generated}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Emails Sent</span>
+                <span class="stat-value">{st.session_state.total_emails_sent}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Tools Used</span>
+                <span class="stat-value">5</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Status</span>
+                <span class="stat-value">🟢 Active</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
     
     # Render neon sidebar
     render_neon_sidebar()
