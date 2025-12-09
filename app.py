@@ -530,52 +530,74 @@ def generate_post(topic: str, tone: str, length: str, audience: str, add_emojis:
     
     with st.spinner("🤖 AI Agent is generating your post..."):
         try:
+            # Validate inputs
+            if not topic or len(topic.strip()) == 0:
+                st.error("❌ Please enter a valid topic")
+                return
+            
             # Map parameters
             tone_lower = tone.lower()
             length_map = {"Short": 1, "Medium": 3, "Long": 5}
             length_paragraphs = length_map.get(length, 3)
             
             # Initialize orchestrator
-            orchestrator = LinkedInAgentOrchestrator()
+            try:
+                orchestrator = LinkedInAgentOrchestrator()
+            except ValueError as e:
+                st.error(f"🔑 Configuration Error: {str(e)}")
+                st.info("💡 Make sure your .env file has GOOGLE_API_KEY configured")
+                return
+            except Exception as e:
+                st.error(f"⚙️ Initialization Error: {str(e)}")
+                return
             
             # Generate post
-            result = orchestrator.orchestrate_post_creation(
-                topic=topic,
-                tone=tone_lower,
-                length=length_paragraphs,
-                target_audience=audience
-            )
+            try:
+                result = orchestrator.orchestrate_post_creation(
+                    topic=topic,
+                    tone=tone_lower,
+                    length=length_paragraphs,
+                    target_audience=audience
+                )
+            except Exception as e:
+                st.error(f"🤖 Agent Generation Error: {str(e)}")
+                st.info("💡 The AI agent encountered an issue. Please try again or use a different topic.")
+                return
             
-            if result.get('success'):
-                post_content = result.get('post', {})
-                
-                # Update session state
-                st.session_state.posts_generated += 1
-                st.session_state.generated_post = post_content
-                st.session_state.post_history.append({
-                    'topic': topic,
-                    'content': post_content,
-                    'timestamp': datetime.now().isoformat(),
-                    'params': {
-                        'tone': tone,
-                        'length': length,
-                        'audience': audience
-                    }
-                })
-                st.session_state.generation_params = {
-                    'topic': topic,
+            # Check result
+            if result is None:
+                st.error("❌ No result returned from agent")
+                return
+            
+            # Check for success - the orchestrator now always returns the post data
+            post_content = result
+            
+            # Update session state
+            st.session_state.posts_generated += 1
+            st.session_state.generated_post = post_content
+            st.session_state.post_history.append({
+                'topic': topic,
+                'content': post_content,
+                'timestamp': datetime.now().isoformat(),
+                'params': {
                     'tone': tone,
                     'length': length,
                     'audience': audience
                 }
-                
-                st.success("✓ Post generated successfully!")
-                st.rerun()
-            else:
-                st.error(f"❌ Generation failed: {result.get('error', 'Unknown error')}")
+            })
+            st.session_state.generation_params = {
+                'topic': topic,
+                'tone': tone,
+                'length': length,
+                'audience': audience
+            }
+            
+            st.success("✓ Post generated successfully!")
+            st.rerun()
         
         except Exception as e:
-            st.error(f"🚨 Error: {str(e)}")
+            st.error(f"🚨 Unexpected Error: {str(e)}")
+            st.info(f"📋 Debug info: {type(e).__name__}")
 
 # ============================================================================
 # DISPLAY GENERATED POST

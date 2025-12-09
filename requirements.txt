@@ -1,18 +1,18 @@
 # Core dependencies - LangChain/LangGraph ADK Stack
 google-generativeai>=0.8.5
 google-ai-generativelanguage>=0.6.0
-langchain>=0.1.0
-langchain-google-genai>=0.0.6
-langchain-core>=0.1.0
-langgraph>=0.0.1
+langchain>=0.2.0
+langchain-google-genai>=0.1.0
+langchain-core>=0.2.0
+langgraph>=0.1.0
 python-dotenv>=1.0.0
 
 # Agent Tools and Function Calling
-pydantic>=2.0.0
+pydantic>=2.5.0
 typing-extensions>=4.5.0
 
 # Streamlit and UI dependencies
-streamlit>=1.52.0
+streamlit>=1.40.0
 plotly>=6.5.0
 streamlit-option-menu>=0.4.0
 
@@ -26,3 +26,4 @@ requests>=2.32.0
 
 # Additional utilities
 aiohttp>=3.9.0
+protobuf>=4.25.0

@@ -93,18 +93,23 @@ CALL_TO_ACTION:
 """
         
         try:
-            
+            # Try agent first
             self.logger.info("🔄 Invoking LangGraph agent...")
-            result = self.agent_executor.invoke({"messages": [("user", task)]})
+            try:
+                result = self.agent_executor.invoke({"messages": [("user", task)]})
+            except Exception as agent_error:
+                self.logger.warning(f"Agent invocation failed: {agent_error}")
+                self.logger.info("🔄 Falling back to direct LLM call...")
+                result = None
             
-            
-            messages = result.get('messages', [])
             output_text = ""
-            if messages:
-                last_message = messages[-1]
-                output_text = last_message.content if hasattr(last_message, 'content') else str(last_message)
+            if result:
+                messages = result.get('messages', [])
+                if messages:
+                    last_message = messages[-1]
+                    output_text = last_message.content if hasattr(last_message, 'content') else str(last_message)
             
-            self.logger.info(f"📝 Agent output received: {len(output_text)} chars")
+            self.logger.info(f"📝 Agent output received: {len(output_text) if output_text else 0} chars")
             
         
             if not output_text or len(output_text) < 50:
@@ -117,7 +122,7 @@ CALL_TO_ACTION:
             blog_data['agent_metadata'] = {
                 'framework': 'LangGraph ReAct Agent (LangChain)',
                 'model': 'gemini-2.5-flash',
-                'tools_available': [tool.name for tool in self.tools],
+                'tools_available': [tool.name for tool in self.tools] if self.tools else [],
                 'agent_type': 'ReAct (Reasoning + Acting)',
                 'generated_at': datetime.now().isoformat()
             }
@@ -140,23 +145,25 @@ CALL_TO_ACTION:
             blog_data['agent_metadata'] = {
                 'framework': 'LangGraph ReAct Agent (Fallback)',
                 'model': 'gemini-2.5-flash',
-                'tools_available': [tool.name for tool in self.tools],
+                'tools_available': [tool.name for tool in self.tools] if self.tools else [],
                 'agent_type': 'Direct Generation (Fallback)',
                 'generated_at': datetime.now().isoformat(),
-                'note': 'Agent framework encountered error, used direct generation'
+                'note': 'Agent framework encountered error, used direct generation',
+                'error': str(e)
             }
             return blog_data
     
-    def _generate_fallback(self, topic: str, tone: str, length: str, target_audience: str) -> str:
+    def _generate_fallback(self, topic: str, tone: str, length: int, target_audience: str) -> str:
         """Generate blog using direct LLM call if agent fails"""
         try:
-            length_map = {"short": "150 words", "medium": "300 words", "long": "500 words"}
+            length_map = {1: "150 words", 2: "250 words", 3: "350 words", 4: "450 words", 5: "550 words"}
+            length_description = length_map.get(length, "350 words")
             
             prompt = f"""Create a professional LinkedIn post about "{topic}".
 
 Requirements:
 - Tone: {tone}
-- Length: {length_map[length]}
+- Length: {length_description}
 - Audience: {target_audience}
 
 Format EXACTLY as:
@@ -171,12 +178,14 @@ HASHTAGS:
 CALL_TO_ACTION:
 [Your call to action here]"""
             
+            self.logger.info("🔄 Using direct LLM call for generation...")
             response = self.llm.invoke(prompt)
             return response.content if hasattr(response, 'content') else str(response)
             
         except Exception as e:
             self.logger.error(f"Fallback generation also failed: {e}")
     
+            # Return hardcoded fallback post structure
             return f"""TITLE: {topic}: A Professional Perspective
 
 CONTENT:

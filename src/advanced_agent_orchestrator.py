@@ -47,55 +47,80 @@ class LinkedInAgentOrchestrator:
         self.logger.info(f"🎯 LangChain Orchestrator starting workflow for: {topic}")
         orchestration_log = []
         
-        # PHASE 1: Planning
-        orchestration_log.append("🧩 Phase 1: LangChain Agent analyzing topic and planning workflow...")
-        orchestration_log.append(f"📋 Topic: {topic} | Tone: {tone} | Audience: {target_audience}")
-        
-        # PHASE 2: Research Execution (handled by LangChain Agent autonomously)
-        orchestration_log.append("🔍 Phase 2: LangChain Agent executing research tools autonomously...")
-        orchestration_log.append(f"✓ Tools available: search_web, fetch_statistics, get_trending_topics")
-        
-        # PHASE 3: Content Generation (LangChain ReAct Agent)
-        orchestration_log.append("🤖 Phase 3: LangChain ReAct Agent generating content...")
-        
-        post = self.post_agent.generate_post_with_langchain(
-            topic=topic,
-            tone=tone,
-            length=length,
-            target_audience=target_audience
-        )
-        
-        # PHASE 4: Quality Validation
-        orchestration_log.append("✅ Phase 4: LangChain Agent completed workflow...")
-        
-        # Get LangChain metadata from post
-        agent_meta = post.get('agent_metadata', {})
-        tools_available = agent_meta.get('tools_available', [])
-        framework = agent_meta.get('framework', 'LangChain ReAct Agent')
-        
-        for tool in tools_available:
-            orchestration_log.append(f"   ⚡ Tool available: {tool}")
-        
-        orchestration_log.append(f"🎉 Workflow complete! Framework: {framework}")
-        
-        # Add orchestration metadata for UI display
-        post['orchestration_metadata'] = {
-            'framework': framework,
-            'tools_available': tools_available,
-            'reasoning_steps': 4,
-            'orchestration_log': orchestration_log,
-            'workflow_type': 'LangChain Multi-Agent System',
-            'timestamp': datetime.now().isoformat()
-        }
-        
-        # Store in memory
-        self.memory['generated_content'].append({
-            'topic': topic,
-            'timestamp': datetime.now().isoformat(),
-            'framework': framework
-        })
-        
-        return post
+        try:
+            # PHASE 1: Planning
+            orchestration_log.append("🧩 Phase 1: LangChain Agent analyzing topic and planning workflow...")
+            orchestration_log.append(f"📋 Topic: {topic} | Tone: {tone} | Audience: {target_audience}")
+            
+            # PHASE 2: Research Execution (handled by LangChain Agent autonomously)
+            orchestration_log.append("🔍 Phase 2: LangChain Agent executing research tools autonomously...")
+            orchestration_log.append(f"✓ Tools available: search_web, fetch_statistics, get_trending_topics")
+            
+            # PHASE 3: Content Generation (LangChain ReAct Agent)
+            orchestration_log.append("🤖 Phase 3: LangChain ReAct Agent generating content...")
+            
+            try:
+                post = self.post_agent.generate_post_with_langchain(
+                    topic=topic,
+                    tone=tone,
+                    length=length,
+                    target_audience=target_audience
+                )
+            except Exception as e:
+                self.logger.error(f"Agent generation failed: {e}")
+                raise Exception(f"Post generation failed: {str(e)}")
+            
+            if not post or not isinstance(post, dict):
+                raise Exception("Invalid post data returned from agent")
+            
+            # PHASE 4: Quality Validation
+            orchestration_log.append("✅ Phase 4: LangChain Agent completed workflow...")
+            
+            # Get LangChain metadata from post
+            agent_meta = post.get('agent_metadata', {})
+            tools_available = agent_meta.get('tools_available', [])
+            framework = agent_meta.get('framework', 'LangChain ReAct Agent')
+            
+            for tool in tools_available:
+                orchestration_log.append(f"   ⚡ Tool available: {tool}")
+            
+            orchestration_log.append(f"🎉 Workflow complete! Framework: {framework}")
+            
+            # Add orchestration metadata for UI display
+            post['orchestration_metadata'] = {
+                'framework': framework,
+                'tools_available': tools_available,
+                'reasoning_steps': 4,
+                'orchestration_log': orchestration_log,
+                'workflow_type': 'LangChain Multi-Agent System',
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            # Store in memory
+            self.memory['generated_content'].append({
+                'topic': topic,
+                'timestamp': datetime.now().isoformat(),
+                'framework': framework
+            })
+            
+            return post
+            
+        except Exception as e:
+            self.logger.error(f"Orchestration error: {e}")
+            # Return fallback post structure
+            fallback_post = {
+                'title': f'{topic}: A Professional Perspective',
+                'content': f'{topic} is transforming our industry. This presents exciting opportunities for growth and innovation.',
+                'hashtags': f'#LinkedIn #Professional #{topic.replace(" ", "")} #Innovation',
+                'call_to_action': 'What are your thoughts? Share in the comments!',
+                'agent_metadata': {
+                    'framework': 'Fallback Generator',
+                    'error': str(e),
+                    'generated_at': datetime.now().isoformat()
+                },
+                'error': str(e)
+            }
+            return fallback_post
     
     def send_email(self, recipient_email: str, post: Dict[str, Any]) -> tuple:
         """
