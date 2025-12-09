@@ -470,18 +470,6 @@ def render_generator_form():
     st.markdown('<div class="glow-card">', unsafe_allow_html=True)
     st.markdown('<div class="glow-card-title">✍️ Generate LinkedIn Post</div>', unsafe_allow_html=True)
     
-    # Email input at top
-    st.markdown("**📧 Default Email (Auto-send after generation)**")
-    default_email = st.text_input(
-        "Email address for automatic sending",
-        placeholder="your@email.com",
-        key="default_email_input",
-        value=st.session_state.get('default_email', '')
-    )
-    st.session_state.default_email = default_email
-    
-    st.markdown("---")
-    
     col1, col2 = st.columns([2, 1])
     
     with col1:
@@ -501,10 +489,11 @@ def render_generator_form():
             )
         
         with col_b:
-            length = st.selectbox(
-                "Length",
-                ["Short", "Medium", "Long"],
-                key="length_select"
+            paragraphs = st.selectbox(
+                "Number of Paragraphs",
+                [1, 2, 3, 4, 5],
+                index=0,
+                key="paragraphs_select"
             )
         
         with col_c:
@@ -520,8 +509,11 @@ def render_generator_form():
             add_emojis = st.checkbox("✨ Add emojis", value=True)
         
         with col_y:
-            auto_send = st.checkbox("🔄 Auto-send to email", value=True)
-            st.session_state.auto_send_enabled = auto_send
+            length = st.selectbox(
+                "Content Length",
+                ["Short", "Medium", "Long"],
+                key="length_select"
+            )
     
     with col2:
         st.markdown("### 🎯 Actions")
@@ -529,20 +521,9 @@ def render_generator_form():
         if st.button("🚀 GENERATE POST", use_container_width=True):
             if not topic:
                 st.error("⚠️ Please enter a topic")
-            elif auto_send and not default_email:
-                st.error("⚠️ Please enter email for auto-send")
             else:
-                # Show workflow popup BEFORE generating
-                st.session_state.show_workflow_popup = True
-                st.session_state.pending_generation = True
-                st.session_state.pending_params = {
-                    'topic': topic,
-                    'tone': tone,
-                    'length': length,
-                    'audience': audience,
-                    'add_emojis': add_emojis
-                }
-                st.rerun()
+                # Generate post directly without workflow popup before
+                generate_post(topic, tone, length, audience, add_emojis, paragraphs)
         
         if st.button("💡 AI Suggest Topic", use_container_width=True):
             suggest_topic()
@@ -553,7 +534,7 @@ def render_generator_form():
 # POST GENERATION LOGIC
 # ============================================================================
 
-def generate_post(topic: str, tone: str, length: str, audience: str, add_emojis: bool):
+def generate_post(topic: str, tone: str, length: str, audience: str, add_emojis: bool, paragraphs: int = 1):
     """Generate a LinkedIn post"""
     
     # Show loading animation
@@ -568,8 +549,12 @@ def generate_post(topic: str, tone: str, length: str, audience: str, add_emojis:
             
             # Map parameters
             tone_lower = tone.lower()
-            length_map = {"Short": 1, "Medium": 3, "Long": 5}
-            length_paragraphs = length_map.get(length, 3)
+            # Use the paragraph count directly if provided, otherwise use length map
+            if isinstance(paragraphs, int) and paragraphs > 0:
+                length_paragraphs = paragraphs
+            else:
+                length_map = {"Short": 1, "Medium": 3, "Long": 5}
+                length_paragraphs = length_map.get(length, 3)
             
             # Initialize orchestrator
             try:
@@ -624,17 +609,6 @@ def generate_post(topic: str, tone: str, length: str, audience: str, add_emojis:
             }
             
             st.success("✓ Post generated successfully!")
-            
-            # Auto-send email as default process
-            if st.session_state.get('auto_send_enabled', True):
-                email_to_send = st.session_state.get('default_email', '')
-                if email_to_send and '@' in email_to_send:
-                    send_email_post(email_to_send, is_auto=True)
-                    if st.session_state.emails_sent > 0:
-                        st.success(f"📧 Email automatically sent to {email_to_send}")
-            
-            # Close workflow popup after generation
-            st.session_state.show_workflow_popup = False
             st.rerun()
         
         except Exception as e:
@@ -1105,13 +1079,12 @@ def main():
         display_generated_post()
         st.markdown("")
         
-        # Show workflow popup
+        # Email section - always show after post generation
+        render_email_section()
+        
+        # Show workflow popup only if needed
         if st.session_state.get('show_workflow_popup', False):
             render_workflow_popup()
-        
-        # Email section
-        if st.session_state.get('show_email_form', False):
-            render_email_section()
 
 # ============================================================================
 # RUN APPLICATION
